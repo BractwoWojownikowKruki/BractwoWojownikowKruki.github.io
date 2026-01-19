@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "predev": "node scripts/generate-images.mjs",
     "dev": "astro dev",
     "prebuild": "node scripts/generate-images.mjs",
     "build": "astro build",
