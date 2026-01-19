@@ -1,0 +1,30 @@
+---
+import { site } from '../config/site';
+const href = site.facebookPageUrl;
+---
+<section class="card" aria-label="Facebook">
+  <h2 class="card__title">Aktualności</h2>
+  <div id="fb-root"></div>
+  <div class="fb-page"
+    data-href={href}
+    data-tabs="timeline"
+    data-width=""
+    data-height=""
+    data-small-header="false"
+    data-adapt-container-width="true"
+    data-hide-cover="false"
+    data-show-facepile="false">
+    <blockquote cite={href} class="fb-xfbml-parse-ignore"><a href={href}>Facebook</a></blockquote>
+  </div>
+</section>
+
+<script>
+  // Load Facebook SDK once.
+  (function (d, s, id) {
+    if (d.getElementById(id)) return;
+    var js = d.createElement(s);
+    js.id = id;
+    js.src = "https://connect.facebook.net/pl_PL/sdk.js#xfbml=1&version=v20.0";
+    d.getElementsByTagName('head')[0].appendChild(js);
+  })(document, 'script', 'facebook-jssdk');
+</script>

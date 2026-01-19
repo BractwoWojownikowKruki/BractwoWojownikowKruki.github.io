@@ -1,0 +1,14 @@
+---
+import { site } from '../config/site';
+---
+<section class="card" aria-label="Instagram">
+  <h2 class="card__title">Instagram</h2>
+  {site.instagramEmbedHtml
+    ? <div class="ig-embed" set:html={site.instagramEmbedHtml} />
+    : (
+      <div class="ig-fallback">
+        <p class="muted">Zobacz najnowsze zdjęcia na Instagramie.</p>
+        <a class="button" href={site.instagramProfileUrl} target="_blank" rel="noreferrer">@kruki.brotherhood</a>
+      </div>
+    )}
+</section>

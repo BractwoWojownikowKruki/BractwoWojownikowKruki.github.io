@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSlider from '../components/HeroSlider.astro';
+import FacebookFeed from '../components/FacebookFeed.astro';
+import InstagramSidebar from '../components/InstagramSidebar.astro';
+import { site } from '../config/site';
+---
+<BaseLayout title={site.title}>
+  <HeroSlider />
+
+  <section class="home">
+    <div class="home__main">
+      <FacebookFeed />
+    </div>
+    {site.showInstagramSidebar && (
+      <aside class="home__side">
+        <InstagramSidebar />
+      </aside>
+    )}
+  </section>
+</BaseLayout>

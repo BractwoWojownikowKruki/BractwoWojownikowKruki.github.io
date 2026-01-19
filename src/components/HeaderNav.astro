@@ -1,0 +1,76 @@
+---
+import { site } from '../config/site';
+---
+<header class="header">
+  <div class="header__inner">
+    <a class="brand" href="/" aria-label="Strona główna">
+      <img class="brand__logo" src="/assets/brand/logo.svg" alt="Kruki" />
+      <span class="brand__name">Bractwo Wojowników Kruki</span>
+    </a>
+
+    <button class="nav__toggle" type="button" aria-label="Otwórz menu" aria-expanded="false">
+      <span class="nav__toggle-bar" aria-hidden="true"></span>
+      <span class="nav__toggle-bar" aria-hidden="true"></span>
+      <span class="nav__toggle-bar" aria-hidden="true"></span>
+    </button>
+
+    <nav class="nav" aria-label="Menu">
+      <ul class="nav__list">
+        <li class="nav__item nav__item--has-children">
+          <div class="nav__row">
+            <a class="nav__link" href={site.nav.about.href}>{site.nav.about.label}</a>
+            <button class="nav__chevron" type="button" aria-label="Rozwiń sekcję O nas" aria-expanded="false">
+              ▾
+            </button>
+          </div>
+          <ul class="nav__submenu" aria-label="{site.nav.about.label}">
+            {site.nav.about.children.map((c) => (
+              <li><a class="nav__sublink" href={c.href}>{c.label}</a></li>
+            ))}
+          </ul>
+        </li>
+        <li class="nav__item"><a class="nav__link" href={site.nav.offer.href}>{site.nav.offer.label}</a></li>
+        <li class="nav__item"><a class="nav__link" href={site.nav.tournament.href}>{site.nav.tournament.label}</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  (function () {
+    const header = document.querySelector('.header');
+    const toggle = document.querySelector('.nav__toggle');
+    const nav = document.querySelector('.nav');
+    const chevron = document.querySelector('.nav__chevron');
+    const submenu = document.querySelector('.nav__submenu');
+
+    function closeMenu() {
+      header?.classList.remove('header--open');
+      toggle?.setAttribute('aria-expanded', 'false');
+    }
+
+    toggle?.addEventListener('click', () => {
+      const isOpen = header?.classList.toggle('header--open');
+      toggle.setAttribute('aria-expanded', String(!!isOpen));
+    });
+
+    // Mobile accordion for About submenu
+    chevron?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const expanded = chevron.getAttribute('aria-expanded') === 'true';
+      chevron.setAttribute('aria-expanded', String(!expanded));
+      submenu?.classList.toggle('nav__submenu--open', !expanded);
+    });
+
+    // Close menu on navigation
+    nav?.addEventListener('click', (e) => {
+      const a = e.target.closest('a');
+      if (a) closeMenu();
+    });
+
+    // Close menu on Esc
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeMenu();
+    });
+  })();
+</script>

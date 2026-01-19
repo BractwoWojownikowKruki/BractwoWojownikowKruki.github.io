@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import MembersGrid from '../../components/MembersGrid.astro';
+import type { MemberSection } from '../../config/site';
+
+export async function getStaticPaths() {
+  const sections: MemberSection[] = ['wojownicy', 'kandydaci', 'niewiasty', 'emeryci'];
+  return sections.map((section) => ({ params: { section } }));
+}
+
+const { section } = Astro.params as { section: MemberSection };
+const headingBySection: Record<MemberSection, string> = {
+  wojownicy: 'Wojownicy',
+  kandydaci: 'Kandydaci',
+  niewiasty: 'Niewiasty',
+  emeryci: 'Emeryci'
+};
+
+const heading = headingBySection[section];
+---
+<BaseLayout title={heading}>
+  <MembersGrid section={section} heading={heading} />
+</BaseLayout>

@@ -1,0 +1,82 @@
+---
+import { loadHeroImages } from '../lib/hero';
+const images = await loadHeroImages();
+---
+<section class="hero" aria-label="Zdjęcia">
+  <div class="hero__viewport" data-hero>
+    <div class="hero__track">
+      {images.map((img, idx) => (
+        <article class="hero__slide" aria-label={`Slajd ${idx + 1}`}>
+          <picture>
+            <source srcset={`${img.src640} 640w, ${img.src1024} 1024w, ${img.src1600} 1600w`} type="image/webp" />
+            <img src={img.src1600} alt={img.alt} loading={idx === 0 ? 'eager' : 'lazy'} decoding="async" />
+          </picture>
+        </article>
+      ))}
+    </div>
+    {images.length > 1 && (
+      <div class="hero__dots" aria-hidden="true">
+        {images.map((_, i) => (
+          <button class="hero__dot" type="button" data-hero-dot={i} aria-label={`Pokaż slajd ${i + 1}`}></button>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<script>
+  (function () {
+    const viewport = document.querySelector('[data-hero]');
+    if (!viewport) return;
+
+    const track = viewport.querySelector('.hero__track');
+    const dots = Array.from(viewport.querySelectorAll('[data-hero-dot]'));
+    const slides = Array.from(viewport.querySelectorAll('.hero__slide'));
+    if (slides.length <= 1) return;
+
+    let index = 0;
+    let timer;
+
+    function go(i) {
+      index = (i + slides.length) % slides.length;
+      track.scrollTo({ left: slides[index].offsetLeft, behavior: 'smooth' });
+      dots.forEach((d, di) => d.classList.toggle('hero__dot--active', di === index));
+    }
+
+    function auto() {
+      clearInterval(timer);
+      timer = setInterval(() => go(index + 1), 7000);
+    }
+
+    dots.forEach((d) => {
+      d.addEventListener('click', () => {
+        go(Number(d.getAttribute('data-hero-dot')));
+        auto();
+      });
+    });
+
+    // Update active dot when user swipes/scrolls
+    let raf = 0;
+    track.addEventListener('scroll', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const x = track.scrollLeft;
+        let best = 0;
+        let bestDist = Infinity;
+        slides.forEach((s, i) => {
+          const dist = Math.abs(s.offsetLeft - x);
+          if (dist < bestDist) {
+            bestDist = dist;
+            best = i;
+          }
+        });
+        index = best;
+        dots.forEach((d, di) => d.classList.toggle('hero__dot--active', di === index));
+      });
+    }, { passive: true });
+
+    // Initial
+    dots[0].classList.add('hero__dot--active');
+    auto();
+  })();
+</script>

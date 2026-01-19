@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import HeaderNav from '../components/HeaderNav.astro';
+import { site } from '../config/site';
+
+const { title = site.title, description = site.description } = Astro.props;
+---
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <HeaderNav />
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="footer">
+      <div class="container footer__inner">
+        <div class="footer__brand">
+          <img src="/assets/brand/ornament.svg" class="footer__ornament" alt="" aria-hidden="true" />
+          <div>
+            <strong>Bractwo Wojowników Kruki</strong>
+            <div class="muted">Wikingowie • rekonstrukcja</div>
+          </div>
+        </div>
+        <div class="footer__links">
+          <a href={site.facebookPageUrl} target="_blank" rel="noreferrer">Facebook</a>
+          <a href={site.instagramProfileUrl} target="_blank" rel="noreferrer">Instagram</a>
+        </div>
+      </div>
+    </footer>
+    <script>
+      // FB Page Plugin: re-render after orientation change / resize.
+      // This helps the plugin adapt to container width changes.
+      (function () {
+        let t;
+        function debounceParse() {
+          clearTimeout(t);
+          t = setTimeout(function () {
+            if (window.FB && window.FB.XFBML && window.FB.XFBML.parse) {
+              window.FB.XFBML.parse();
+            }
+          }, 250);
+        }
+        window.addEventListener('resize', debounceParse, { passive: true });
+        window.addEventListener('orientationchange', debounceParse, { passive: true });
+      })();
+    </script>
+  </body>
+</html>

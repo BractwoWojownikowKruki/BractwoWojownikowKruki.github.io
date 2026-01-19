@@ -1,0 +1,19 @@
+---
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { readMarkdownAsHtml } from '../lib/markdown';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const { slug, title } = Astro.props as { slug: string; title: string };
+const filePath = path.join(__dirname, '..', 'content', 'pages', `${slug}.md`);
+const html = await readMarkdownAsHtml(filePath);
+---
+<section class="page">
+  <h1 class="page__title">{title}</h1>
+  <div class="sep" aria-hidden="true">
+    <img src="/assets/brand/ornament.svg" alt="" />
+  </div>
+  <div class="prose" set:html={html} />
+</section>

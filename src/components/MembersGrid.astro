@@ -1,0 +1,120 @@
+---
+import { loadMembers } from '../lib/members';
+import type { MemberSection } from '../config/site';
+
+const { section, heading } = Astro.props as { section: MemberSection; heading: string };
+const members = await loadMembers(section);
+---
+<section class="members">
+  <div class="members__head">
+    <h1 class="page__title">{heading}</h1>
+    <div class="sep" aria-hidden="true">
+      <img src="/assets/brand/ornament.svg" alt="" />
+    </div>
+  </div>
+
+  <div class="members__grid">
+    {members.map((m) => (
+      <button
+        type="button"
+        class="member"
+        data-member-name={m.displayName}
+        data-member-bio={m.bioHtml}
+        data-member-images={JSON.stringify(m.allLargeUrls)}
+        data-member-cover={m.coverLargeUrl ?? ''}
+      >
+        <div class="member__ph">
+          {m.coverThumbUrl ? (
+            <img src={m.coverThumbUrl} alt={m.displayName} loading="lazy" decoding="async" />
+          ) : (
+            <div class="member__ph--empty" aria-hidden="true"></div>
+          )}
+        </div>
+        <div class="member__meta">
+          <div class="member__name">{m.displayName}</div>
+        </div>
+      </button>
+    ))}
+  </div>
+
+  <dialog class="lightbox" id="lightbox">
+    <div class="lightbox__inner">
+      <button class="lightbox__close" type="button" aria-label="Zamknij">✕</button>
+      <div class="lightbox__media">
+        <img id="lightbox-img" alt="" />
+      </div>
+      <div class="lightbox__text">
+        <h2 id="lightbox-title"></h2>
+        <div id="lightbox-bio" class="prose"></div>
+        <div id="lightbox-thumbs" class="lightbox__thumbs"></div>
+      </div>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  (function () {
+    const dlg = document.getElementById('lightbox');
+    if (!dlg) return;
+
+    const img = document.getElementById('lightbox-img');
+    const title = document.getElementById('lightbox-title');
+    const bio = document.getElementById('lightbox-bio');
+    const thumbs = document.getElementById('lightbox-thumbs');
+
+    function setMain(src, alt) {
+      img.src = src;
+      img.alt = alt;
+    }
+
+    function openFrom(button) {
+      const name = button.getAttribute('data-member-name') || '';
+      const bioHtml = button.getAttribute('data-member-bio') || '';
+      const images = JSON.parse(button.getAttribute('data-member-images') || '[]');
+
+      title.textContent = name;
+      bio.innerHTML = bioHtml;
+      thumbs.innerHTML = '';
+
+      if (images.length) {
+        setMain(images[0], name);
+        images.forEach((src, i) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'lightbox__thumb';
+          b.setAttribute('aria-label', 'Pokaż zdjęcie ' + (i + 1));
+          const im = document.createElement('img');
+          im.src = src;
+          im.alt = '';
+          im.loading = 'lazy';
+          b.appendChild(im);
+          b.addEventListener('click', () => setMain(src, name));
+          thumbs.appendChild(b);
+        });
+      } else {
+        setMain('', name);
+      }
+
+      dlg.showModal();
+      document.body.classList.add('modal-open');
+    }
+
+    document.querySelectorAll('.member').forEach((btn) => {
+      btn.addEventListener('click', () => openFrom(btn));
+    });
+
+    dlg.addEventListener('click', (e) => {
+      const rect = dlg.querySelector('.lightbox__inner').getBoundingClientRect();
+      const inside = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+      if (!inside) dlg.close();
+    });
+
+    dlg.querySelector('.lightbox__close')?.addEventListener('click', () => dlg.close());
+
+    dlg.addEventListener('close', () => {
+      document.body.classList.remove('modal-open');
+      img.src = '';
+      thumbs.innerHTML = '';
+    });
+  })();
+</script>
